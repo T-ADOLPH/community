@@ -6,11 +6,10 @@ import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
 /**
- * Author: T.ADOLPH
- * Date: 2020/8/22 20:49
- * Describe:
+ * @author: T.ADOLPH
+ * @date: 2020/8/22 20:49
+ * Describe: 把从github获取的用户信息写到DB
  */
-//@Repository     // 解决UserMapper实例红线，不知原因
 @Mapper
 public interface UserMapper {
     @Insert("INSERT INTO USER (NAME, ACCOUNT_ID, TOKEN, GMT_CREAT, GMT_MODIFIED) VALUES (#{name}, #{accountId}, #{token}, #{gmtCreat}, #{gmtModified})")

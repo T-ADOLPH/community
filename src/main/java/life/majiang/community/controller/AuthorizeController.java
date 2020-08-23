@@ -5,12 +5,12 @@ import life.majiang.community.dto.GithubUser;
 import life.majiang.community.mapper.UserMapper;
 import life.majiang.community.model.User;
 import life.majiang.community.provider.GithubProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.UUID;
 
@@ -22,37 +22,51 @@ import java.util.UUID;
 
 @Controller
 public class AuthorizeController {
-    @Autowired
+    @Resource
     private GithubProvider githubProvider;
+    // @Autowired 不推荐使用 建议换成 @Resource
 
     @Value("${github.client.id}")
     private String clientId;
+    // 赋值github账号id
 
     @Value("${github.client.secret}")
     private String clientSecret;
+    // 赋值github账号id对应密钥
 
     @Value("${github.redirect.url}")
     private String redirectUrl;
+    // 赋值callback地址
 
-    @Autowired
+    @Resource
     private UserMapper userMapper;
 
-
+    /**
+     * 当GitHub访问/callback 时，获取用户信息并写入session
+     * @param code
+     * @param state
+     * @param request
+     * @return index.html 刷新首页
+     */
     @GetMapping("/callback")
     public String callback(@RequestParam(name = "code") String code,
                            @RequestParam(name = "state") String state,
                            HttpServletRequest request) {
+        // 新建AccessToken并根据参数设置对应的值
         AccessTokenDTO accessTokenDTO = new AccessTokenDTO();
         accessTokenDTO.setCode(code);
         accessTokenDTO.setClient_id(state);
         accessTokenDTO.setClient_id(clientId);
         accessTokenDTO.setClient_secret(clientSecret);
         accessTokenDTO.setRedirect_url(redirectUrl);
-        String accessToken = githubProvider.getAccessToken(accessTokenDTO);
-        GithubUser githubUser = githubProvider.getUser(accessToken);
-        System.out.println(githubUser.toString());
+        // 向GitHub请求并获取一个token
+        String tokenResponse = githubProvider.getAccessToken(accessTokenDTO);
+        // 根据token向GitHub请求并获取对应用户信息
+        GithubUser githubUser = githubProvider.getUser(tokenResponse);
 
         if (githubUser != null) {
+        // 登录成功，获取Session和Cookie
+
             // 登录成功，持久化到DB
             User user = new User();
             user.setToken(UUID.randomUUID().toString());
@@ -61,15 +75,12 @@ public class AuthorizeController {
             user.setGmtCreat(System.currentTimeMillis());
             user.setGmtModified(user.getGmtCreat());
             userMapper.insert(user);
-
-            // 登录成功，获取Session和Cookie
+            // 把用户信息写入Session中，index会在session中查找到并更改“登录”为用户名
             request.getSession().setAttribute("user", githubUser);
-
-            return "redirect:/";
 
         } else {
             // 登录失败，跳转到Index，重新登录
-            return "redirect:/";
         }
+        return "redirect:/";
     }
 }

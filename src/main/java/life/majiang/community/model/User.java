@@ -1,9 +1,9 @@
 package life.majiang.community.model;
 
 /**
- * Author: T.ADOLPH
- * Date: 2020/8/22 20:52
- * Describe:
+ * @author: T.ADOLPH
+ * @date: 2020/8/22 20:52
+ * Describe: 封装数据库中User表的信息
  */
 public class User {
     private Integer id;

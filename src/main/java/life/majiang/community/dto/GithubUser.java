@@ -1,11 +1,12 @@
 package life.majiang.community.dto;
 
 /**
- * Author: T.ADOLPH
- * Date: 2020/8/22 14:42
- * Describe:
+ * @author: T.ADOLPH
+ * @date: 2020/8/22 14:42
+ * Describe: 保存从github获得的用户信息
  */
 public class GithubUser {
+
     private long id;
     private String name;
     private String bio;
