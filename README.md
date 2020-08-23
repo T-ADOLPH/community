@@ -18,6 +18,7 @@
 [Vim 官网](https://www.vim.org/download.php#pc)
 [git 官网](https://git-scm.com/downloads)
 [visual paradigm 官网-作图软件](https://www.visual-paradigm.com/cn/)
+[flyway 官网](https://flywaydb.org/getstarted/firststeps/maven)
 
 
 ## 脚本
@@ -33,6 +34,10 @@ CREATE CACHED TABLE "PUBLIC"."USER"(
 
 CREATE USER IF NOT EXISTS sa PASSWORD '123';
 ALTER USER sa admin true ;
+```
+
+```bash
+mvn flyway:migrate
 ```
 ---
 test commit --amend --no-edit

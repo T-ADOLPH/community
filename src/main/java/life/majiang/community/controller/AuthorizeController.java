@@ -1,6 +1,7 @@
 package life.majiang.community.controller;
 
 import life.majiang.community.dto.AccessTokenDTO;
+
 import life.majiang.community.dto.GithubUser;
 import life.majiang.community.mapper.UserMapper;
 import life.majiang.community.model.User;
@@ -65,8 +66,7 @@ public class AuthorizeController {
         String tokenResponse = githubProvider.getAccessToken(accessTokenDTO);
         // 根据token向GitHub请求并获取对应用户信息
         GithubUser githubUser = githubProvider.getUser(tokenResponse);
-
-        if (githubUser != null) {
+        if (githubUser != null && githubUser.getId() != null) {
             // 登录成功，获取Session和Cookie
 
             // 登录成功，持久化到DB
