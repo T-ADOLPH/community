@@ -1,7 +1,6 @@
 package life.majiang.community.controller;
 
 import life.majiang.community.dto.AccessTokenDTO;
-
 import life.majiang.community.dto.GithubUser;
 import life.majiang.community.mapper.UserMapper;
 import life.majiang.community.model.User;
@@ -61,13 +60,14 @@ public class AuthorizeController {
         accessTokenDTO.setClient_id(state);
         accessTokenDTO.setClient_id(clientId);
         accessTokenDTO.setClient_secret(clientSecret);
-        accessTokenDTO.setRedirect_url(redirectUrl);
+        accessTokenDTO.setRedirect_uri(redirectUrl);
         // 向GitHub请求并获取一个token
         String tokenResponse = githubProvider.getAccessToken(accessTokenDTO);
         // 根据token向GitHub请求并获取对应用户信息
         GithubUser githubUser = githubProvider.getUser(tokenResponse);
         if (githubUser != null && githubUser.getId() != null) {
             // 登录成功，获取Session和Cookie
+            System.out.println(githubUser);
 
             // 登录成功，持久化到DB
             User user = new User();
@@ -77,6 +77,7 @@ public class AuthorizeController {
             user.setName(githubUser.getName());
             user.setGmtCreat(System.currentTimeMillis());
             user.setGmtModified(user.getGmtCreat());
+            user.setAvatarUrl(githubUser.getAvatar_url());
             userMapper.insert(user);
             // 把用户信息写入Session中，index会在session中查找到并更改“登录”为用户名
 //            request.getSession().setAttribute("user", githubUser);

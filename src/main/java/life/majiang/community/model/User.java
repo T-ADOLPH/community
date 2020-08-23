@@ -1,10 +1,13 @@
 package life.majiang.community.model;
 
+import lombok.Data;
+
 /**
  * @author: T.ADOLPH
  * @date: 2020/8/22 20:52
  * Describe: 封装数据库中User表的信息
  */
+@Data
 public class User {
     private Integer id;
     private String accountId;
@@ -12,64 +15,5 @@ public class User {
     private String name;
     private Long gmtCreat;
     private Long gmtModified;
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", accountId='" + accountId + '\'' +
-                ", token='" + token + '\'' +
-                ", name='" + name + '\'' +
-                ", gmtCreat=" + gmtCreat +
-                ", gmtModified=" + gmtModified +
-                '}';
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getAccountId() {
-        return accountId;
-    }
-
-    public void setAccountId(String accountId) {
-        this.accountId = accountId;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Long getGmtCreat() {
-        return gmtCreat;
-    }
-
-    public void setGmtCreat(Long gmtCreat) {
-        this.gmtCreat = gmtCreat;
-    }
-
-    public Long getGmtModified() {
-        return gmtModified;
-    }
-
-    public void setGmtModified(Long gmtModified) {
-        this.gmtModified = gmtModified;
-    }
+    private String avatarUrl;
 }
