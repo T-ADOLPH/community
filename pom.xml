@@ -13,7 +13,6 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>community</name>
     <description>community project for Spring Boot</description>
-
     <properties>
         <java.version>1.8</java.version>
     </properties>
@@ -75,6 +74,7 @@
             <artifactId>h2</artifactId>
             <version>1.4.200</version>
         </dependency>
+
     </dependencies>
 
     <build>
@@ -82,6 +82,24 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <!-- https://flywaydb.org/getstarted/firststeps/maven -->
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <version>6.5.5</version>
+                <configuration>
+                    <url>jdbc:h2:~/H2Database/MjCommunity</url>
+                    <user>sa</user>
+                    <password>123</password>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.h2database</groupId>
+                        <artifactId>h2</artifactId>
+                        <version>1.4.200</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>
