@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import java.util.UUID;
 
 /**
@@ -43,15 +44,16 @@ public class AuthorizeController {
 
     /**
      * 当GitHub访问/callback 时，获取用户信息并写入session
+     *
      * @param code
      * @param state
-     * @param request
+     * @param response
      * @return index.html 刷新首页
      */
     @GetMapping("/callback")
     public String callback(@RequestParam(name = "code") String code,
                            @RequestParam(name = "state") String state,
-                           HttpServletRequest request) {
+                           HttpServletResponse response) {
         // 新建AccessToken并根据参数设置对应的值
         AccessTokenDTO accessTokenDTO = new AccessTokenDTO();
         accessTokenDTO.setCode(code);
@@ -65,21 +67,25 @@ public class AuthorizeController {
         GithubUser githubUser = githubProvider.getUser(tokenResponse);
 
         if (githubUser != null) {
-        // 登录成功，获取Session和Cookie
+            // 登录成功，获取Session和Cookie
 
             // 登录成功，持久化到DB
             User user = new User();
-            user.setToken(UUID.randomUUID().toString());
+            String token = UUID.randomUUID().toString();
+            user.setToken(token);
             user.setAccountId(String.valueOf(githubUser.getId()));
             user.setName(githubUser.getName());
             user.setGmtCreat(System.currentTimeMillis());
             user.setGmtModified(user.getGmtCreat());
             userMapper.insert(user);
             // 把用户信息写入Session中，index会在session中查找到并更改“登录”为用户名
-            request.getSession().setAttribute("user", githubUser);
+//            request.getSession().setAttribute("user", githubUser);
 
-        } else {
-            // 登录失败，跳转到Index，重新登录
+            // 用token作为绑定前后端的状态，来验证是否登录成功
+            // 把token写入cookie，然后与DB中查询，判断是否登录成功
+            response.addCookie(new Cookie("token", token));
+
+        } else {    // 登录失败，跳转到Index，重新登录
         }
         return "redirect:/";
     }
