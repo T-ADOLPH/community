@@ -15,9 +15,10 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * @author: T.ADOLPH
- * @date: 2020/8/23 19:38
- * @version: Describe:
+ * Author: T.ADOLPH
+ * Date: 2020/8/23 19:38
+ * Version: 1.0
+ * Describe:
  */
 @Controller
 public class PublishController {
@@ -36,10 +37,6 @@ public class PublishController {
     /**
      * 接受提交信息的请求，并把提交的信息用写入question数据库
      *
-     * @param title
-     * @param description
-     * @param tag
-     * @param request
      * @param model 保存请求中的信息
      * @return 提交成功返回到index页，不成功继续在publish页
      */
@@ -57,15 +54,15 @@ public class PublishController {
         model.addAttribute("tag", tag);
 
         // 检查输入是否为空
-        if (title == null || title == "") {
+        if (title == null || "".equals(title)) {
             model.addAttribute("error", "标题不能为空");
             return "publish";
         }
-        if (description == null || description == "") {
+        if (description == null || "".equals(description)) {
             model.addAttribute("error", "description不能为空");
             return "publish";
         }
-        if (tag == null || tag == "") {
+        if (tag == null || "".equals(tag)) {
             model.addAttribute("error", "tag不能为空");
             return "publish";
         }
@@ -78,7 +75,7 @@ public class PublishController {
         Cookie[] cookies = request.getCookies();
         if (cookies != null && cookies.length != 0) {
             for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("token")) {
+                if ("token".equals(cookie.getName())) {
                     String token = cookie.getValue();
                     user = userMapper.findUserByToken(token);
                     if (user != null) {

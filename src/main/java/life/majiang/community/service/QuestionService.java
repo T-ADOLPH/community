@@ -49,11 +49,47 @@ public class QuestionService {
         }
         paginationDTO.setCurrentPage(page);
         // 设置paginationDTO的值
-        paginationDTO.setPagination(size);
+        paginationDTO.setPagination();
         // 限制查询的偏移量
         Integer offset = size * (page-1);
         // 获取该页所有question记录
         List<Question> questions = questionMapper.list(offset, size);
+        // 将所有的question记录联合对应user记录合并成一个questionDTOList
+        List<QuestionDTO> questionDTOS = new LinkedList<>();
+        for (Question question : questions) {
+            User user = userMapper.findUserById(question.getCreator());
+            QuestionDTO questionDTO = new QuestionDTO();
+            questionDTO.setUser(user);
+            BeanUtils.copyProperties(question, questionDTO);
+            questionDTOS.add(questionDTO);
+        }
+        // 赋值questionDTOS
+        paginationDTO.setQuestionDTOS(questionDTOS);
+        return paginationDTO;
+    }
+
+
+    public PaginationDTO listByUserId(Integer userId, Integer page, Integer size){
+        PaginationDTO paginationDTO = new PaginationDTO();
+        // 得到问题总数
+        Integer totalCount = questionMapper.countByUserId(userId);
+        // 计算总页数
+        Integer totalPage = (int) Math.ceil((double) totalCount / size);
+        paginationDTO.setTotalPage(totalPage);
+        // page 越界处理
+        if(page < 1){
+            page = 1;
+        }
+        if(page > totalPage){
+            page = totalPage;
+        }
+        paginationDTO.setCurrentPage(page);
+        // 设置paginationDTO的值
+        paginationDTO.setPagination();
+        // 限制查询的偏移量
+        Integer offset = size * (page-1);
+        // 获取该页所有question记录
+        List<Question> questions = questionMapper.listByUserId(userId, offset, size);
         // 将所有的question记录联合对应user记录合并成一个questionDTOList
         List<QuestionDTO> questionDTOS = new LinkedList<>();
         for (Question question : questions) {

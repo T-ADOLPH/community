@@ -21,8 +21,7 @@ public class PaginationDTO {
     private Boolean showNextPage;
     private Boolean showLastPage;
 
-    public void setPagination(Integer size) {
-
+    public void setPagination() {
         // 计算pageList并赋值
         int count = 0;
         pages = new LinkedList<>();
