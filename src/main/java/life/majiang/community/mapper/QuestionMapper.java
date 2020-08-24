@@ -1,5 +1,6 @@
 package life.majiang.community.mapper;
 
+import life.majiang.community.dto.QuestionDTO;
 import life.majiang.community.model.Question;
 import life.majiang.community.model.User;
 import org.apache.ibatis.annotations.Insert;
@@ -27,8 +28,13 @@ public interface QuestionMapper {
 
     /**
      *
+     * @param offset
+     * @param size
      * @return
      */
-    @Select("SELECT * FROM QUESTION")
-    List<Question> list();
+    @Select("SELECT * FROM QUESTION LIMIT #{offset}, #{size}")
+    List<Question> list(@Param(value = "offset") Integer offset, @Param(value = "size") Integer size);
+
+    @Select("SELECT COUNT(1) FROM QUESTION")
+    Integer count();
 }

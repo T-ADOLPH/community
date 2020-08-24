@@ -1,5 +1,6 @@
 package life.majiang.community.service;
 
+import life.majiang.community.dto.PaginationDTO;
 import life.majiang.community.dto.QuestionDTO;
 import life.majiang.community.mapper.QuestionMapper;
 import life.majiang.community.mapper.UserMapper;
@@ -21,26 +22,49 @@ import java.util.List;
 public class QuestionService {
 
     @Resource
-    private QuestionMapper questionMapper;
-
-    @Resource
     private UserMapper userMapper;
 
-    public List<QuestionDTO> list() {
-        List<Question> questionList = questionMapper.list();
-        List<QuestionDTO> questionDTOList = new LinkedList<>();
-        for (Question question : questionList) {
+    @Resource
+    private QuestionMapper questionMapper;
+
+    /**
+     *
+     * @param page
+     * @param size
+     * @return
+     */
+    public PaginationDTO list(Integer page, Integer size) {
+        PaginationDTO paginationDTO = new PaginationDTO();
+        // 得到问题总数
+        Integer totalCount = questionMapper.count();
+        // 计算总页数
+        Integer totalPage = (int) Math.ceil((double) totalCount / size);
+        paginationDTO.setTotalPage(totalPage);
+        // page 越界处理
+        if(page < 1){
+            page = 1;
+        }
+        if(page > totalPage){
+            page = totalPage;
+        }
+        paginationDTO.setCurrentPage(page);
+        // 设置paginationDTO的值
+        paginationDTO.setPagination(size);
+        // 限制查询的偏移量
+        Integer offset = size * (page-1);
+        // 获取该页所有question记录
+        List<Question> questions = questionMapper.list(offset, size);
+        // 将所有的question记录联合对应user记录合并成一个questionDTOList
+        List<QuestionDTO> questionDTOS = new LinkedList<>();
+        for (Question question : questions) {
             User user = userMapper.findUserById(question.getCreator());
             QuestionDTO questionDTO = new QuestionDTO();
-            /*question 是直接从Question表中拿到的数据，
-            其字段名为下划线连接gmt_create，不能转换为驼峰questionDTO中的gmtCreate
-            解决办法：在application.properties 中设置MyBatis驼峰写法自动转换
-            mybatis.configuration.map-underscore-to-camel-case=true
-             */
-            BeanUtils.copyProperties(question, questionDTO);
             questionDTO.setUser(user);
-            questionDTOList.add(questionDTO);
+            BeanUtils.copyProperties(question, questionDTO);
+            questionDTOS.add(questionDTO);
         }
-        return questionDTOList;
+        // 赋值questionDTOS
+        paginationDTO.setQuestionDTOS(questionDTOS);
+        return paginationDTO;
     }
 }
