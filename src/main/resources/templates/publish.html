@@ -3,11 +3,11 @@
 <head>
     <title>发布 - 学习码匠社区</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <link rel="stylesheet" href="css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="css/bootstrap-theme.min.css"/>
-    <link rel="stylesheet" href="css/MjCommunity.css"/>
-    <script src="jquery/jquery.min.js" type="application/javascript"></script>
-    <script src="js/bootstrap.min.js" type="application/javascript"></script>
+    <link rel="stylesheet" href="/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" href="/css/MjCommunity.css"/>
+    <script src="/jquery/jquery.min.js" type="application/javascript"></script>
+    <script src="/js/bootstrap.min.js" type="application/javascript"></script>
 </head>
 <body>
 <nav class="navbar navbar-default">
@@ -23,6 +23,7 @@
 
             <!-- 地址为/publish，方法为post，会被PublishController的PostMapping接受 -->
             <form action="/publish" method="post">
+                <input type="hidden" name="id" th:value="${id}">
                 <div class="form-group">
                     <label for="title">问题标题（简单扼要）:</label>
                     <input type="text" class="form-control" th:value="${title}" id="title" name="title" placeholder="问题标题……">

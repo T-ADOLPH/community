@@ -32,7 +32,7 @@ public class UserService {
             dbUser.setName(user.getName());
             dbUser.setToken(user.getToken());
             dbUser.setAvatarUrl(user.getAvatarUrl());
-            dbUser.setGmtModified(user.getGmtModified());
+            dbUser.setGmtModified(System.currentTimeMillis());
             userMapper.update(dbUser);
         }
     }
