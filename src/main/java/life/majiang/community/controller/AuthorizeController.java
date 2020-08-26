@@ -5,6 +5,8 @@ import life.majiang.community.dto.GithubUser;
 import life.majiang.community.mapper.UserMapper;
 import life.majiang.community.model.User;
 import life.majiang.community.provider.GithubProvider;
+import life.majiang.community.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.UUID;
 
@@ -41,6 +44,9 @@ public class AuthorizeController {
 
     @Resource
     private UserMapper userMapper;
+
+    @Autowired
+    private UserService userService;
 
     /**
      * 当GitHub访问/callback 时，获取用户信息并写入session
@@ -73,11 +79,9 @@ public class AuthorizeController {
             user.setToken(token);
             user.setAccountId(String.valueOf(githubUser.getId()));
             user.setName(githubUser.getName());
-            user.setGmtCreat(System.currentTimeMillis());
-            user.setGmtModified(user.getGmtCreat());
             user.setAvatarUrl(githubUser.getAvatar_url());
             // 登录成功，持久化到DB
-            userMapper.insert(user);
+            userService.createOrUpdate(user);
             // 把用户信息写入Session中，index会在session中查找到并更改“登录”为用户名
 //            request.getSession().setAttribute("user", githubUser);
 
@@ -87,6 +91,16 @@ public class AuthorizeController {
 
         } else {    // 登录失败，跳转到Index，重新登录
         }
+        return "redirect:/";
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpServletResponse response,
+                         HttpServletRequest request){
+        request.getSession().removeAttribute("user");
+        Cookie cookie = new Cookie("token", null);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
         return "redirect:/";
     }
 }
