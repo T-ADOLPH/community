@@ -44,6 +44,7 @@ ALTER USER sa admin true ;
 
 ```bash
 mvn flyway:migrate
+mvn -Dmybatis.generator.overwrite=true mybatis-generator:generate
 ```
 ---
 test commit --amend --no-edit

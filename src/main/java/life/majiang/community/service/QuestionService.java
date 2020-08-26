@@ -6,6 +6,7 @@ import life.majiang.community.mapper.QuestionMapper;
 import life.majiang.community.mapper.UserMapper;
 import life.majiang.community.model.Question;
 import life.majiang.community.model.User;
+import life.majiang.community.model.UserExample;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -55,16 +56,16 @@ public class QuestionService {
         // 获取该页所有question记录
         List<Question> questions = questionMapper.list(offset, size);
         // 将所有的question记录联合对应user记录合并成一个questionDTOList
-        List<QuestionDTO> questionDTOS = new LinkedList<>();
+        List<QuestionDTO> questionDTOList = new LinkedList<>();
         for (Question question : questions) {
-            User user = userMapper.findUserById(question.getCreator());
+            User user = userMapper.selectByPrimaryKey(question.getCreator());
             QuestionDTO questionDTO = new QuestionDTO();
             questionDTO.setUser(user);
             BeanUtils.copyProperties(question, questionDTO);
-            questionDTOS.add(questionDTO);
+            questionDTOList.add(questionDTO);
         }
         // 赋值questionDTOS
-        paginationDTO.setQuestionDTOS(questionDTOS);
+        paginationDTO.setQuestionDTOS(questionDTOList);
         return paginationDTO;
     }
 
@@ -92,7 +93,7 @@ public class QuestionService {
         // 将所有的question记录联合对应user记录合并成一个questionDTOList
         List<QuestionDTO> questionDTOS = new LinkedList<>();
         for (Question question : questions) {
-            User user = userMapper.findUserById(question.getCreator());
+            User user = userMapper.selectByPrimaryKey(question.getCreator());
             QuestionDTO questionDTO = new QuestionDTO();
             questionDTO.setUser(user);
             BeanUtils.copyProperties(question, questionDTO);
@@ -107,7 +108,7 @@ public class QuestionService {
         Question question = questionMapper.getById(id);
         QuestionDTO questionDTO = new QuestionDTO();
         BeanUtils.copyProperties(question, questionDTO);
-        User user = userMapper.findUserById(question.getCreator());
+        User user = userMapper.selectByPrimaryKey(question.getCreator());
         questionDTO.setUser(user);
 
         return questionDTO;

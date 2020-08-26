@@ -2,9 +2,11 @@ package life.majiang.community.service;
 
 import life.majiang.community.mapper.UserMapper;
 import life.majiang.community.model.User;
+import life.majiang.community.model.UserExample;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * Author: T.ADOLPH
@@ -21,19 +23,27 @@ public class UserService {
 
 
     public void createOrUpdate(User user) {
-        User dbUser = userMapper.findUserByAccountId(user.getAccountId());
-        if (dbUser == null) {
+        UserExample userExample = new UserExample();
+        userExample.createCriteria()
+                .andAccountIdEqualTo(user.getAccountId());
+        List<User> users = userMapper.selectByExample(userExample);
+        if (users.size() == 0) {
             // 数据库没有相同AccountID的用户，插入
             user.setGmtCreat(System.currentTimeMillis());
             user.setGmtModified(user.getGmtCreat());
             userMapper.insert(user);
         } else {
             // 有则修改相关属性
-            dbUser.setName(user.getName());
-            dbUser.setToken(user.getToken());
-            dbUser.setAvatarUrl(user.getAvatarUrl());
-            dbUser.setGmtModified(System.currentTimeMillis());
-            userMapper.update(dbUser);
+            User dbUser = users.get(0);
+            User updateUser = new User();
+            updateUser.setName(user.getName());
+            updateUser.setToken(user.getToken());
+            updateUser.setAvatarUrl(user.getAvatarUrl());
+            updateUser.setGmtModified(System.currentTimeMillis());
+            UserExample example = new UserExample();
+            example.createCriteria()
+                    .andIdEqualTo(dbUser.getId());
+            userMapper.updateByExampleSelective(updateUser, example);
         }
     }
 }
