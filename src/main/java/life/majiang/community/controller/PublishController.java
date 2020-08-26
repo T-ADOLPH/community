@@ -1,7 +1,6 @@
 package life.majiang.community.controller;
 
 import life.majiang.community.mapper.QuestionMapper;
-import life.majiang.community.mapper.UserMapper;
 import life.majiang.community.model.Question;
 import life.majiang.community.model.User;
 import org.springframework.stereotype.Controller;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -25,9 +23,6 @@ public class PublishController {
 
     @Resource
     private QuestionMapper questionMapper;
-
-    @Resource
-    private UserMapper userMapper;
 
     @GetMapping("/publish")
     public String publish() {
@@ -67,25 +62,9 @@ public class PublishController {
             return "publish";
         }
 
-        User user = null;
-// 从Session中直接获取user ？？
+        User user = (User) request.getSession().getAttribute("user");
+        // 从Session中直接获取user ？？
 //        user = (User)request.getSession().getAttribute("user");
-
-        // 获取user对象
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null && cookies.length != 0) {
-            for (Cookie cookie : cookies) {
-                if ("token".equals(cookie.getName())) {
-                    String token = cookie.getValue();
-                    user = userMapper.findUserByToken(token);
-                    if (user != null) {
-                        request.getSession().setAttribute("user", user);
-                    }
-                    break;
-                }
-            }
-        }
-
         if (user == null) {
             // 若获取不到user信息，发布失败，回到发布页
             model.addAttribute("error", "用户未登录");

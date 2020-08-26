@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -24,9 +23,6 @@ import javax.servlet.http.HttpServletRequest;
 public class ProfileController {
 
     @Resource
-    private UserMapper userMapper;
-
-    @Resource
     private QuestionService questionService;
 
     @GetMapping("/profile/{action}")
@@ -35,25 +31,7 @@ public class ProfileController {
                           @RequestParam(name = "page", defaultValue = "1") Integer page,
                           @RequestParam(name = "size", defaultValue = "3") Integer size,
                           Model model) {
-        // 获得请求中所有cookies
-        Cookie[] cookies = request.getCookies();
-        User user = null;
-        if (cookies != null && cookies.length != 0) {
-            for (Cookie cookie : cookies) {
-                // 遍历cookies 找到名为token的cookie
-                if ("token".equals(cookie.getName())) {
-                    // 获取token的值，并查找对应的user
-                    String token = cookie.getValue();
-                    user = userMapper.findUserByToken(token);
-                    if (user != null) {
-                        // 找到user把user信息放入Session中
-                        request.getSession().setAttribute("user", user);
-                    }
-                    break;
-                }
-            }/**/
-        }
-
+        User user = (User) request.getSession().getAttribute("user");
         if (user == null) {
             return "redirect:/";
         }
